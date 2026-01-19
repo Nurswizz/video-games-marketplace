@@ -13,7 +13,7 @@ public class AuthRepository {
         this.con = con;
     }
 
-    public void register(User user) {
+    public void save(User user) {
         try {
             // TODO: implementation of registration logic of the user
         } catch (Exception e) {
@@ -21,12 +21,5 @@ public class AuthRepository {
         }
     }
 
-    public void login(String username, String password) {
-        try {
-            // TODO: implemenation of login logic of the user
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
