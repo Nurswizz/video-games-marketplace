@@ -8,28 +8,24 @@ import java.util.logging.Logger;
 
 
 import src.config.Database;
+import src.controllers.AuthController;
 
 public class Main {
     public static void main(String[] args) {
         Connection conn = null;
         Scanner sc = new Scanner(System.in);
+        AuthController authController = new AuthController();
 
         try {
-            conn = new Database().getConnection();
-            System.out.println("Connected to database successfully");
+            System.out.println("1. Register");
+            System.out.println("2. Login");
 
-            while (true) {
-                System.out.println("Welcome to VideoGames Market");
-                System.out.println("-----------");
-                System.out.println("Write your choice");
-                System.out.println("/quit");
-                String choice = sc.nextLine();
-                if (choice.equalsIgnoreCase("/quit")) {
-                    System.out.println("Thanks for playing!");
-                    break;
-                }
+            String choice =  sc.nextLine();
+            if (choice.equals("1")) {
+                authController.register();
+            } else if (choice.equals("2")) {
+                authController.login();
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
