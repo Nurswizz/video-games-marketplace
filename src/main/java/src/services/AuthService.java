@@ -2,45 +2,46 @@ package src.services;
 
 import src.repositories.AuthRepository;
 import src.entities.User;
+import src.utils.Validation;
 
 public class AuthService {
 
     private final AuthRepository auth = new AuthRepository();
 
-    public boolean register(User user) {
+    public void register(User user) {
 
         if (user.getUsername().isEmpty() || user.getPassword().isEmpty() || user.getEmail().isEmpty()) {
-            return false;
+            throw new IllegalArgumentException("All fields must be filled.");
         }
 
         User doesExist = auth.getUserByEmail(user.getEmail());
         if (doesExist != null) {
-            return false;
+            throw new IllegalArgumentException("User with this email already exists.");
+        }
+
+        if (!Validation.validateEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email address.");
         }
 
         auth.save(user);
-
-        return true;
     }
 
     public User login(String email,  String password) {
         if (email.isEmpty() || password.isEmpty()) {
-            return null;
+            throw new IllegalArgumentException("Email and password cannot be empty.");
         }
 
         User user = auth.getUserByEmail(email);
 
         if (user == null) {
-            return null;
+            throw new IllegalArgumentException("User not found.");
         }
 
-        if (user.getPassword().equals(password)) {
-            return user;
+        if (!user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Invalid password.");
         }
 
-        return null;
-
-
+        return user;
     }
 
 }

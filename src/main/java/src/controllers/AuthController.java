@@ -24,17 +24,16 @@ public class AuthController {
         String password = scanner.nextLine();
 
         User user = new User(username, password, email);
-        boolean success = authService.register(user);
-
-        if (success) {
+        try {
+            authService.register(user);
             System.out.println("Registration successful!");
-        } else {
-            System.out.println("Registration failed: all fields must be filled.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Registration failed: " + e.getMessage());
         }
     }
 
     // Login method
-    public void login() {
+    public User login() {
         System.out.println("=== Login ===");
 
         System.out.print("Email: ");
@@ -43,11 +42,12 @@ public class AuthController {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-        User user = authService.login(email, password);
-        if (user != null) {
-            System.out.println("Login successful! Welcome, " + user.getUsername());
-        } else {
-            System.out.println("Login failed: wrong username or password.");
+        try {
+            User user = authService.login(email, password);
+            return user;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Login failed: " + e.getMessage());
+            return null;
         }
     }
 }

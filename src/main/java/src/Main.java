@@ -1,13 +1,8 @@
 package src;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import src.entities.User;
+
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-
-import src.config.Database;
 import src.controllers.AuthController;
 
 public class Main {
@@ -15,18 +10,23 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         AuthController authController = new AuthController();
 
-        try {
+        while (true) {
             System.out.println("1. Register");
             System.out.println("2. Login");
+            System.out.println("3. Exit");
 
-            String choice =  sc.nextLine();
-            if (choice.equals("1")) {
-                authController.register();
-            } else if (choice.equals("2")) {
-                authController.login();
+            String choice = sc.nextLine();
+            switch (choice) {
+                case "1":
+                    authController.register();
+                    break;
+                case "2":
+                    authController.login();
+                    break;
+                case "3":
+                    System.exit(0);
+                    break;
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 }
