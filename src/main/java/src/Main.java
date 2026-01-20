@@ -23,7 +23,7 @@ public class Main {
             String choice =  sc.nextLine();
             if (choice.equals("1")) {
                 authController.register();
-            } else if (choice.equals("3")) {
+            } else if (choice.equals("2")) {
                 authController.login();
             }
         } catch (Exception e) {
