@@ -7,7 +7,7 @@ public class Game {
     private long id;
     private final String title;
     private final String releaseDate;
-    private final String team
+    private final String team;
     private final double rating;
     private final String timesListed;
     private final String numberOfReviews;
