@@ -7,6 +7,7 @@ public class User {
     private final String password;
     private final String email;
     private final boolean isAdmin;
+    private float balance;
 
     public User(String username, String password, String email) {
         this(0, username, password, email, false);
@@ -20,6 +21,7 @@ public class User {
         this.password = password;
         this.email = email;
         this.isAdmin = isAdmin;
+        this.balance = 0;
     }
 
     public long getId() {
@@ -45,5 +47,12 @@ public class User {
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public float getBalance() {
+        return balance;
+    }
+    public void setBalance(float balance) {
+        this.balance = balance;
     }
 }
