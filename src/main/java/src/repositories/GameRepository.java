@@ -1,120 +1,83 @@
-package src;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
-// 1. СУЩНОСТЬ (Entity)
-class Game {
-    private long id;
-    private final String title;
-    private final String releaseDate;
-    private final String team; // Исправлено: добавлена ;
-    private final double rating;
-    private final String timesListed;
-    private final String numberOfReviews;
-    private final List<String> genres;
-    private final String summary;
-    private final List<String> reviews;
+public class GameRepository {
 
-    public Game(String title, String releaseDate, String team, double rating,
-                String timesListed, String numberOfReviews, List<String> genres,
-                String summary, List<String> reviews) {
-        this(0, title, releaseDate, team, rating, timesListed, numberOfReviews, genres, summary, reviews);
-    }
-
-    public Game(long id, String title, String releaseDate, String team, double rating,
-                String timesListed, String numberOfReviews, List<String> genres,
-                String summary, List<String> reviews) {
-        this.id = id;
-        this.title = title;
-        this.releaseDate = releaseDate;
-        this.team = team;
-        this.rating = rating;
-        this.timesListed = timesListed;
-        this.numberOfReviews = numberOfReviews;
-        this.genres = genres;
-        this.summary = summary;
-        this.reviews = reviews;
-    }
-
-    // Геттеры и сеттеры
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
-    public String getTitle() { return title; }
-
-    @Override
-    public String toString() {
-        return "Game{id=" + id + ", title='" + title + "', rating=" + rating + "}";
-    }
-}
-
-// 2. ИНТЕРФЕЙС РЕПОЗИТОРИЯ
-interface GameRepository {
-    Game save(Game game);
-    Optional<Game> findById(long id);
-    List<Game> findAll();
-    void update(Game game);
-    void delete(long id);
-}
-
-// 3. РЕАЛИЗАЦИЯ РЕПОЗИТОРИЯ (In-Memory)
-class GameRepositoryImpl implements GameRepository {
+    // Список для хранения данных прямо внутри класса
     private final List<Game> games = new ArrayList<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private long nextId = 1;
 
-    @Override
+    // 1. Метод Save
     public Game save(Game game) {
         if (game.getId() == 0) {
-            game.setId(idGenerator.getAndIncrement());
+            game.setId(nextId++);
         }
         games.add(game);
         return game;
     }
 
-    @Override
+    // 2. Метод FindById
     public Optional<Game> findById(long id) {
-        return games.stream().filter(g -> g.getId() == id).findFirst();
+        return games.stream()
+                .filter(g -> g.getId() == id)
+                .findFirst();
     }
 
-    @Override
+    // 3. Метод FindAll
     public List<Game> findAll() {
         return new ArrayList<>(games);
     }
 
-    @Override
+    // 4. Метод Update
     public void update(Game updatedGame) {
-        findById(updatedGame.getId()).ifPresent(existing -> {
-            games.remove(existing);
-            games.add(updatedGame);
-        });
+        for (int i = 0; i < games.size(); i++) {
+            if (games.get(i).getId() == updatedGame.getId()) {
+                games.set(i, updatedGame);
+                return;
+            }
+        }
     }
 
-    @Override
+    // 5. Метод Delete
     public void delete(long id) {
         games.removeIf(g -> g.getId() == id);
     }
-}
 
-// 4. ГЛАВНЫЙ КЛАСС ДЛЯ ЗАПУСКА
-public class Main {
+    // Вспомогательный класс Game (можно оставить в этом же файле внизу)
+    public static class Game {
+        private long id;
+        private String title;
+        private double rating;
+
+        public Game(String title, double rating) {
+            this.title = title;
+            this.rating = rating;
+        }
+
+        public long getId() { return id; }
+        public void setId(long id) { this.id = id; }
+        public String getTitle() { return title; }
+
+        @Override
+        public String toString() {
+            return "Game{id=" + id + ", title='" + title + "', rating=" + rating + "}";
+        }
+    }
+
+    // Точка входа для проверки
     public static void main(String[] args) {
-        GameRepository repository = new GameRepositoryImpl();
+        GameRepository repository = new GameRepository();
 
-        // Создание игры
-        Game witcher = new Game("The Witcher 3", "2015", "CD Projekt RED", 4.8,
-                "1000", "500", List.of("RPG"), "Epic story", List.of("Great!"));
+        // Создаем и сохраняем
+        Game g1 = new Game("GTA V", 4.5);
+        repository.save(g1);
 
-        // Сохранение
-        repository.save(witcher);
-        System.out.println("Сохранено: " + repository.findAll());
+        // Выводим все
+        System.out.println("Все игры: " + repository.findAll());
 
-        // Поиск по ID
-        repository.findById(1L).ifPresent(g -> System.out.println("Найдено по ID 1: " + g.getTitle()));
-
-        // Удаление
-        repository.delete(1L);
+        // Удаляем
+        repository.delete(1);
         System.out.println("После удаления: " + repository.findAll());
     }
 }
