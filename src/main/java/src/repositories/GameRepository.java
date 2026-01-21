@@ -1,6 +1,9 @@
+package src.repositories;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import src.entities.Game;
 
 public class GameRepository {
 
@@ -44,40 +47,5 @@ public class GameRepository {
         games.removeIf(g -> g.getId() == id);
     }
 
-    // Вспомогательный класс Game (можно оставить в этом же файле внизу)
-    public static class Game {
-        private long id;
-        private String title;
-        private double rating;
 
-        public Game(String title, double rating) {
-            this.title = title;
-            this.rating = rating;
-        }
-
-        public long getId() { return id; }
-        public void setId(long id) { this.id = id; }
-        public String getTitle() { return title; }
-
-        @Override
-        public String toString() {
-            return "Game{id=" + id + ", title='" + title + "', rating=" + rating + "}";
-        }
-    }
-
-    // Точка входа для проверки
-    public static void main(String[] args) {
-        GameRepository repository = new GameRepository();
-
-        // Создаем и сохраняем
-        Game g1 = new Game("GTA V", 4.5);
-        repository.save(g1);
-
-        // Выводим все
-        System.out.println("Все игры: " + repository.findAll());
-
-        // Удаляем
-        repository.delete(1);
-        System.out.println("После удаления: " + repository.findAll());
-    }
 }
