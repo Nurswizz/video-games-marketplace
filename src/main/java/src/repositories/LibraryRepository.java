@@ -50,5 +50,20 @@ public class LibraryRepository {
             throw new RuntimeException(e);
         }
     }
+    // Save new purchase to user games table
+    public void savePurchase(long userId, long gameId) {
+        String sql = "INSERT INTO user_games (user_id, game_id) VALUES (?, ?)";
 
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setLong(1, userId);
+            stmt.setLong(2, gameId);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            System.out.println("Database error while saving purchase!");
+            e.printStackTrace();
+        }
+    }
 }
