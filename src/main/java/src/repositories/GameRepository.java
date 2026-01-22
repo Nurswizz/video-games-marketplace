@@ -12,7 +12,7 @@ public class GameRepository {
 
     // 1. Сохранение новой игры
     public void save(Game game) {
-        String sql = "INSERT INTO games (title, release_date, team, rating, times_listed, number_of_reviews, summary) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO video_games (title, release_date, team, rating, times_listed, number_of_reviews, summary) VALUES (?,?,?,?,?,?,?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {
@@ -32,7 +32,7 @@ public class GameRepository {
 
     // 2. Поиск по ID
     public Optional<Game> findById(long id) {
-        String sql = "SELECT * FROM games WHERE id = ?";
+        String sql = "SELECT * FROM video_games WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {
@@ -53,7 +53,7 @@ public class GameRepository {
     // 3. Получение всех игр
     public List<Game> findAll() {
         List<Game> games = new ArrayList<>();
-        String sql = "SELECT * FROM games";
+        String sql = "SELECT * FROM video_games";
 
         try (Connection conn = Database.getConnection();
              Statement stt = conn.createStatement();
@@ -70,7 +70,7 @@ public class GameRepository {
 
     // 4. Обновление данных игры
     public void update(Game game) {
-        String sql = "UPDATE games SET title=?, release_date=?, team=?, rating=?, times_listed=?, number_of_reviews=?, summary=? WHERE id=?";
+        String sql = "UPDATE video_games SET title=?, release_date=?, team=?, rating=?, times_listed=?, number_of_reviews=?, summary=? WHERE id=?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {
@@ -91,7 +91,7 @@ public class GameRepository {
 
     // 5. Удаление игры
     public void delete(long id) {
-        String sql = "DELETE FROM games WHERE id = ?";
+        String sql = "DELETE FROM video_games WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {
