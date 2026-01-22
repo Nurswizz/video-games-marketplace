@@ -19,7 +19,7 @@ public class LibraryRepository {
         String sql = """
         SELECT g.id, g.title, g.release_date, g.team,
                g.rating, g.times_listed, g.genres, g.summary
-        FROM games g
+        FROM video_games g
         JOIN user_games ug ON g.id = ug.game_id
         WHERE ug.user_id = ?
     """;

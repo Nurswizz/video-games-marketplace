@@ -5,10 +5,30 @@ import src.entities.User;
 
 import java.util.Scanner;
 
+import src.utils.Session;
+
 public class AuthController {
 
     private final AuthService authService = new AuthService();
     private final Scanner scanner = new Scanner(System.in);
+
+    public void authenticateUser() {
+        System.out.println("Authorization");
+        System.out.println("===============");
+        System.out.println("1. Register");
+        System.out.println("2. Login");
+
+        String choice =  scanner.nextLine();
+
+        if (choice.equals("1")) {
+            register();
+        } else  if (choice.equals("2")) {
+            login();
+        } else {
+            System.out.println("Wrong choice");
+            authenticateUser();
+        }
+    }
 
     // Registration method
     public void register() {
@@ -27,13 +47,14 @@ public class AuthController {
         try {
             authService.register(user);
             System.out.println("Registration successful!");
+            Session.login(user.getId());
         } catch (IllegalArgumentException e) {
             System.out.println("Registration failed: " + e.getMessage());
         }
     }
 
     // Login method
-    public User login() {
+    public void login() {
         System.out.println("=== Login ===");
 
         System.out.print("Email: ");
@@ -44,10 +65,11 @@ public class AuthController {
 
         try {
             User user = authService.login(email, password);
-            return user;
+            System.out.println("Login successful!");
+            Session.login(user.getId());
         } catch (IllegalArgumentException e) {
             System.out.println("Login failed: " + e.getMessage());
-            return null;
+
         }
     }
 }

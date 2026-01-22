@@ -13,25 +13,24 @@ public class LibraryService {
         this.libraryRepo = libraryRepo;
     }
 
-    public boolean processPurchase(User user, Game game) {
-        // Check for null values
-        if (user == null || game == null) {
-            return false;
-        }
+    public boolean processPurchase(long userId, long gameId) {
 
         // Get all games current user already owns
-        List<Game> myGames = libraryRepo.getAllGamesOfUser(user.getId());
+        List<Game> myGames = libraryRepo.getAllGamesOfUser(userId);
 
         // Check for duplicates using streams
         boolean alreadyOwned = myGames.stream()
-                .anyMatch(g -> Objects.equals(g.getId(), game.getId()));
+                .anyMatch(g -> Objects.equals(g.getId(), gameId));
 
         if (alreadyOwned) {
             return false;
         }
 
-        // If not owned - add to lib
-        libraryRepo.savePurchase(user.getId(), game.getId());
+        libraryRepo.savePurchase(userId, gameId);
         return true;
+    }
+
+    public List<Game> getAllGamesOfUser(long userId) {
+        return libraryRepo.getAllGamesOfUser(userId);
     }
 }

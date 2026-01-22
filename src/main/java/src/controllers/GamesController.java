@@ -2,6 +2,9 @@ package src.controllers;
 
 import src.entities.Game;
 import src.services.GamesService;
+import src.services.LibraryService;
+
+import src.utils.Session;
 
 import java.util.List;
 import java.util.Scanner;
@@ -9,10 +12,12 @@ import java.util.Scanner;
 public class GamesController {
 
     private final GamesService gamesService;
+    private final LibraryService libraryService;
     private final Scanner scanner = new Scanner(System.in);
 
-    public GamesController(GamesService gamesService) {
+    public GamesController(GamesService gamesService, LibraryService libraryService) {
         this.gamesService = gamesService;
+        this.libraryService = libraryService;
     }
 
     public void start() {
@@ -27,6 +32,7 @@ public class GamesController {
                 case "2" -> showTopGames();
                 case "3" -> showGameDetails();
                 case "4" -> addGame();
+                case "5" -> showLibrary();
                 case "0" -> running = false;
                 default -> System.out.println("Unknown command");
             }
@@ -39,6 +45,7 @@ public class GamesController {
         System.out.println("2. Top games by rating");
         System.out.println("3. Game details");
         System.out.println("4. Add game");
+        System.out.println("5. Library");
         System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
@@ -58,15 +65,61 @@ public class GamesController {
 
     private void showGameDetails() {
         System.out.print("Enter game id: ");
-        long id = Long.parseLong(scanner.nextLine());
+        long gameId = Long.parseLong(scanner.nextLine());
 
-        Game game = gamesService.getGameWithReviews(id);
+        Game game = gamesService.getGameWithReviews(gameId);
 
-        System.out.println("\nTitle: " + game.getTitle());
+        boolean inDetails = true;
+        while (inDetails) {
+            printGameDetails(game);
+            printGameActions();
+
+            String cmd = scanner.nextLine();
+            switch (cmd) {
+                case "1" -> addToLibrary(game);
+                case "0" -> inDetails = false;
+                default -> System.out.println("Unknown command");
+            }
+        }
+    }
+
+    private void printGameDetails(Game game) {
+        System.out.println("\n=== Game Details ===");
+        System.out.println("Title: " + game.getTitle());
         System.out.println("Rating: " + game.getRating());
         System.out.println("Genres: " + game.getGenres());
         System.out.println("Summary: " + game.getSummary());
         System.out.println("Reviews: " + game.getReviews().size());
+    }
+
+    private void printGameActions() {
+        System.out.println("\n1. Add to library");
+        System.out.println("0. Back");
+        System.out.print("Choose option: ");
+    }
+
+    private void addToLibrary(Game game) {
+        long userId = Session.getId(); // используем текущего пользователя из сессии
+        try {
+            libraryService.processPurchase(userId, game.getId());
+            System.out.println("Game added to your library.");
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void showLibrary() {
+        long userId = Session.getId();
+
+        try {
+            List<Game> games = libraryService.getAllGamesOfUser(userId);
+
+            for (Game g : games) {
+                printGameDetails(g);
+            }
+        } catch (IllegalStateException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     private void addGame() {
