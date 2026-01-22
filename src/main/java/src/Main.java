@@ -15,20 +15,29 @@ import src.services.LibraryService;
 import src.controllers.AuthController;
 
 
+
+
 public class Main {
-    public static void main(String[] args) {
 
-        AuthController authController = new AuthController();
+    private static AuthController authController;
+    private static GamesController controller;
 
-        authController.authenticateUser();
-
+    public static void init() {
+        authController = new AuthController();
         GameRepository gameRepo = new GameRepository();
         ReviewRepository reviewRepo = new ReviewRepository();
         LibraryRepository libraryRepo = new LibraryRepository();
 
         GamesService gamesService = new GamesService(gameRepo, reviewRepo);
         LibraryService libraryService = new LibraryService(libraryRepo);
-        GamesController controller = new GamesController(gamesService,  libraryService);
+        controller = new GamesController(gamesService, libraryService);
+
+    }
+    public static void main(String[] args) {
+        init();
+
+        authController.authenticateUser();
+
         controller.start();
     }
 
