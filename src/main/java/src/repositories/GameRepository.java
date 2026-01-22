@@ -21,9 +21,8 @@ public class GameRepository {
             stt.setString(2, game.getReleaseDate());
             stt.setString(3, game.getTeam());
             stt.setDouble(4, game.getRating());
-            stt.setString(5, game.getTimesListed());
-            stt.setString(6, game.getNumberOfReviews());
-            stt.setString(7, game.getSummary());
+            stt.setInt(5, game.getTimesListed());
+            stt.setString(6, game.getSummary());
 
             stt.executeUpdate();
         } catch (Exception e) {
@@ -80,10 +79,9 @@ public class GameRepository {
             stt.setString(2, game.getReleaseDate());
             stt.setString(3, game.getTeam());
             stt.setDouble(4, game.getRating());
-            stt.setString(5, game.getTimesListed());
-            stt.setString(6, game.getNumberOfReviews());
-            stt.setString(7, game.getSummary());
-            stt.setLong(8, game.getId());
+            stt.setInt(5, game.getTimesListed());
+            stt.setString(6, game.getSummary());
+            stt.setLong(7, game.getId());
 
             stt.executeUpdate();
         } catch (Exception e) {
@@ -112,12 +110,10 @@ public class GameRepository {
                 rs.getString("title"),
                 rs.getString("release_date"),
                 rs.getString("team"),
-                rs.getDouble("rating"),
-                rs.getString("times_listed"),
-                rs.getString("number_of_reviews"),
-                new ArrayList<>(), // Жанры (List<String>)
-                rs.getString("summary"),
-                new ArrayList<>()  // Отзывы (List<String>)
+                rs.getFloat("rating"),
+                rs.getInt("times_listed"),
+                rs.getString("genres"),// Жанры (List<String>)
+                rs.getString("summary")
         );
     }
 }
