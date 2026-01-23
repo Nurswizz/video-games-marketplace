@@ -117,21 +117,14 @@ public class GameRepository {
         );
     }
 
-    public interface GameRepositoryn {
+    public List<Game> searchSmart(String keyword) {
+        if (keyword == null) return findAll();
 
-        void save(Game game);
+        String k = keyword.trim().toLowerCase();
 
-        Optional<Game> findById(long id);
-
-        List<Game> findAll();
-
-        void update(Game game);
-
-        void delete(long id);
-
-        /**
-         * Поиск игр, у которых название содержит переданную строку (без учета регистра).
-         */
-        List<Game> findByTitleContains(String keyword);
+        return findAll().stream()
+                .filter(g -> g.getTitle().toLowerCase().replaceAll("\\s+", "")
+                        .contains(k.replaceAll("\\s+", "")))
+                .toList();
     }
 }
