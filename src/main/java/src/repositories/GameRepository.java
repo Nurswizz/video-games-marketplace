@@ -116,33 +116,22 @@ public class GameRepository {
                 rs.getString("summary")
         );
     }
-}
-public List<Game> searchByTitle(String titlePart) {
-    List<Game> games = new ArrayList<>();
-    String sql = "SELECT * FROM video_games WHERE title ILIKE ?";
 
-    try (Connection conn = Database.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+    public interface GameRepositoryn {
 
-        stmt.setString(1, "%" + titlePart + "%");
+        void save(Game game);
 
-        try (ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                games.add(new Game(
-                        rs.getLong("id"),
-                        rs.getString("title"),
-                        rs.getString("release_date"),
-                        rs.getString("team"),
-                        rs.getFloat("rating"),
-                        rs.getInt("times_listed"),
-                        rs.getString("genres"),
-                        rs.getString("summary")
-                ));
-            }
-        }
-    } catch (Exception e) {
-        throw new RuntimeException("Error searching games by title", e);
+        Optional<Game> findById(long id);
+
+        List<Game> findAll();
+
+        void update(Game game);
+
+        void delete(long id);
+
+        /**
+         * Поиск игр, у которых название содержит переданную строку (без учета регистра).
+         */
+        List<Game> findByTitleContains(String keyword);
     }
-
-    return games;
 }
