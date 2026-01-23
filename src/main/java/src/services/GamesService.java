@@ -3,6 +3,8 @@ package src.services;
 import src.entities.Game;
 import src.entities.Review;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import src.repositories.GameRepository;

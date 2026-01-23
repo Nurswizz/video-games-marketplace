@@ -117,3 +117,32 @@ public class GameRepository {
         );
     }
 }
+public List<Game> searchByTitle(String titlePart) {
+    List<Game> games = new ArrayList<>();
+    String sql = "SELECT * FROM video_games WHERE title ILIKE ?";
+
+    try (Connection conn = Database.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, "%" + titlePart + "%");
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                games.add(new Game(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("release_date"),
+                        rs.getString("team"),
+                        rs.getFloat("rating"),
+                        rs.getInt("times_listed"),
+                        rs.getString("genres"),
+                        rs.getString("summary")
+                ));
+            }
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("Error searching games by title", e);
+    }
+
+    return games;
+}

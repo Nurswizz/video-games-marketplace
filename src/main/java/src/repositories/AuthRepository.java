@@ -1,11 +1,14 @@
 package src.repositories;
 
+import src.entities.Game;
 import src.entities.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
+
 import src.config.Database;
 
 public class AuthRepository {
@@ -49,7 +52,9 @@ public class AuthRepository {
             throw new RuntimeException("Failed to fetch user by email", e);
         }
     }
-
-
-
 }
+
+
+
+
+
