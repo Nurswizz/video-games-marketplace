@@ -6,6 +6,7 @@ import src.services.LibraryService;
 
 import src.utils.Session;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -33,6 +34,7 @@ public class GamesController {
                 case "3" -> showGameDetails();
                 case "4" -> addGame();
                 case "5" -> showLibrary();
+                case "6" -> searchGame();
                 case "0" -> running = false;
                 default -> System.out.println("Unknown command");
             }
@@ -46,6 +48,7 @@ public class GamesController {
         System.out.println("3. Game details");
         System.out.println("4. Add game");
         System.out.println("5. Library");
+        System.out.println("6. Search game");
         System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
@@ -90,6 +93,7 @@ public class GamesController {
         System.out.println("Genres: " + game.getGenres());
         System.out.println("Summary: " + game.getSummary());
         System.out.println("Reviews: " + game.getReviews().size());
+        System.out.println("ID: " + game.getId());
     }
 
     private void printGameActions() {
@@ -156,6 +160,24 @@ public class GamesController {
 
         gamesService.addGame(game);
         System.out.println("Game added.");
+    }
+
+    private void searchGame() {
+        System.out.println("\n=== Search Game ===");
+        System.out.println("Enter game name: ");
+        String query = scanner.nextLine();
+
+        List<Game> games = new ArrayList<>();
+
+        games = gamesService.searchGames(query);
+        if (games.isEmpty()) {
+            System.out.println("Game not found.");
+            return;
+        }
+        for (Game g : games) {
+            printGameDetails(g);
+        }
+
     }
 
     private void printShort(Game game) {

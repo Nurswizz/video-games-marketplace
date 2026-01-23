@@ -5,6 +5,7 @@ import src.entities.Review;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import src.repositories.GameRepository;
@@ -55,5 +56,13 @@ public class GamesService {
         List<Review> reviews = reviewRepository.getReviewsByGameId(gameId);
         game.setReviews(reviews);
         return game;
+    }
+
+    public List<Game> searchGames(String query) {
+        List<Game> games = new ArrayList<>();
+
+        games = gameRepository.searchSmart(query);
+
+        return games;
     }
 }

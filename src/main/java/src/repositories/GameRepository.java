@@ -124,7 +124,7 @@ public class GameRepository {
 
         return findAll().stream()
                 .filter(g -> g.getTitle().toLowerCase().replaceAll("\\s+", "")
-                        .contains(k.replaceAll("\\s+", "")))
+                        .contains(k.replaceAll("\\s+", ""))).limit(10)
                 .toList();
     }
 }
