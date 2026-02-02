@@ -32,9 +32,15 @@ public class GamesController {
                 case "1" -> showAllGames();
                 case "2" -> showTopGames();
                 case "3" -> showGameDetails();
-                case "4" -> addGame();
-                case "5" -> showLibrary();
-                case "6" -> searchGame();
+                case "4" -> showLibrary();
+                case "5" -> searchGame();
+                case "9" -> {
+                    if (Session.getInstance().isAdmin()) {
+                        showAdminPanel();
+                    } else {
+                        System.out.println("Access denied");
+                    }
+                }
                 case "0" -> running = false;
                 default -> System.out.println("Unknown command");
             }
@@ -46,9 +52,11 @@ public class GamesController {
         System.out.println("1. List all games");
         System.out.println("2. Top games by rating");
         System.out.println("3. Game details");
-        System.out.println("4. Add game");
-        System.out.println("5. Library");
-        System.out.println("6. Search game");
+        System.out.println("4. Library");
+        System.out.println("5. Search game");
+        if (Session.getInstance().isAdmin()) {
+            System.out.println("9. Admin panel");
+        }
         System.out.println("0. Exit");
         System.out.print("Choose option: ");
     }
@@ -103,7 +111,7 @@ public class GamesController {
     }
 
     private void addToLibrary(Game game) {
-        long userId = Session.getId(); // используем текущего пользователя из сессии
+        long userId = Session.getInstance().getUserId(); // используем текущего пользователя из сессии
         try {
             libraryService.processPurchase(userId, game.getId());
             System.out.println("Game added to your library.");
@@ -113,7 +121,7 @@ public class GamesController {
     }
 
     private void showLibrary() {
-        long userId = Session.getId();
+        long userId = Session.getInstance().getUserId();
 
         try {
             List<Game> games = libraryService.getAllGamesOfUser(userId);
@@ -178,6 +186,29 @@ public class GamesController {
             printGameDetails(g);
         }
 
+    }
+
+    private void showAdminPanel() {
+        while (true) {
+            System.out.println("===== Admin Panel =====");
+            System.out.println("1. Add Game");
+            System.out.println("2. Change Game Info");
+            System.out.println("3. Delete Game");
+            System.out.println("0. Back");
+            String choice =  scanner.nextLine();
+
+            if (choice.equals("1")) {
+
+            } else if (choice.equals("0")) {
+
+            } else if (choice.equals("3")) {
+
+            } else if (choice.equals("0")) {
+                break;
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        }
     }
 
     private void printShort(Game game) {

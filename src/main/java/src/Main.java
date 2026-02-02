@@ -1,21 +1,12 @@
 package src;
 
-import src.entities.User;
-
-import java.util.Scanner;
 import src.controllers.AuthController;
 import src.repositories.GameRepository;
 import src.repositories.LibraryRepository;
-import  src.repositories.ReviewRepository;
+import src.repositories.ReviewRepository;
 import src.services.GamesService;
-import src.controllers.AuthController;
 import src.controllers.GamesController;
 import src.services.LibraryService;
-
-import src.controllers.AuthController;
-
-
-
 
 public class Main {
 

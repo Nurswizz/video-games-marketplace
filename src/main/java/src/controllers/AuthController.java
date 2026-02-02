@@ -47,7 +47,7 @@ public class AuthController {
         try {
             authService.register(user);
             System.out.println("Registration successful!");
-            Session.login(user.getId());
+            Session.login(user.getId(), user.isAdmin());
         } catch (IllegalArgumentException e) {
             System.out.println("Registration failed: " + e.getMessage());
         }
@@ -66,7 +66,7 @@ public class AuthController {
         try {
             User user = authService.login(email, password);
             System.out.println("Login successful!");
-            Session.login(user.getId());
+            Session.login(user.getId(), user.isAdmin());
         } catch (IllegalArgumentException e) {
             System.out.println("Login failed: " + e.getMessage());
 

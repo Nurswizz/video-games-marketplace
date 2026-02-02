@@ -1,14 +1,37 @@
 package src.utils;
 
-public class Session {
+public final class Session {
 
-    private static long id;
+    private static Session instance;
 
-    public static void login(long userId) {
-        id =  userId;
+    private final long userId;
+    private final boolean isAdmin;
+
+    private Session(long userId, boolean isAdmin) {
+        this.userId = userId;
+        this.isAdmin = isAdmin;
     }
 
-    public static long getId() {
-        return id;
+    public static void login(long userId, boolean isAdmin) {
+        instance = new Session(userId, isAdmin);
+    }
+
+    public static Session getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("User is not logged in");
+        }
+        return instance;
+    }
+
+    public static void logout() {
+        instance = null;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
     }
 }

@@ -50,6 +50,7 @@ public class GameRepository {
         return Optional.empty();
     }
 
+
     // 3. Получение всех игр
     public List<Game> findAll() {
         List<Game> games = new ArrayList<>();
