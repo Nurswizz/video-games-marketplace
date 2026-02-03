@@ -12,7 +12,7 @@ public class GameRepository {
 
     // 1. Сохранение новой игры
     public void save(Game game) {
-        String sql = "INSERT INTO video_games (title, release_date, team, rating, times_listed, number_of_reviews, summary) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO video_games (title, release_date, team, rating, times_listed, summary, genres) VALUES (?,?,?,?,?,?,?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {
@@ -23,9 +23,11 @@ public class GameRepository {
             stt.setDouble(4, game.getRating());
             stt.setInt(5, game.getTimesListed());
             stt.setString(6, game.getSummary());
+            stt.setString(7, game.getGenres());
 
             stt.executeUpdate();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             throw new RuntimeException("Error saving game", e);
         }
     }
@@ -113,7 +115,7 @@ public class GameRepository {
                 rs.getString("team"),
                 rs.getFloat("rating"),
                 rs.getInt("times_listed"),
-                rs.getString("genres"),// Жанры (List<String>)
+                rs.getString("genres"),
                 rs.getString("summary")
         );
     }

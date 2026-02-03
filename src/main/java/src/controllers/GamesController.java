@@ -3,10 +3,11 @@ package src.controllers;
 import src.entities.Game;
 import src.services.GamesService;
 import src.services.LibraryService;
-
+import src.utils.InputReader;
 import src.utils.Session;
+import src.utils.Validation;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,19 +15,23 @@ public class GamesController {
 
     private final GamesService gamesService;
     private final LibraryService libraryService;
-    private final Scanner scanner = new Scanner(System.in);
+    private final InputReader inputReader;
+    private final AdminPanelController adminPanelController;
 
     public GamesController(GamesService gamesService, LibraryService libraryService) {
         this.gamesService = gamesService;
         this.libraryService = libraryService;
+        this.inputReader = new InputReader(new Scanner(System.in));
+        this.adminPanelController = new AdminPanelController(gamesService);
     }
+
 
     public void start() {
         boolean running = true;
 
         while (running) {
-            printMenu();
-            String command = scanner.nextLine();
+            printMainMenu();
+            String command = inputReader.readLine();
 
             switch (command) {
                 case "1" -> showAllGames();
@@ -34,20 +39,14 @@ public class GamesController {
                 case "3" -> showGameDetails();
                 case "4" -> showLibrary();
                 case "5" -> searchGame();
-                case "9" -> {
-                    if (Session.getInstance().isAdmin()) {
-                        showAdminPanel();
-                    } else {
-                        System.out.println("Access denied");
-                    }
-                }
+                case "9" -> handleAdminAccess();
                 case "0" -> running = false;
-                default -> System.out.println("Unknown command");
+                default -> System.out.println("Unknown command. Please try again.");
             }
         }
     }
 
-    private void printMenu() {
+    private void printMainMenu() {
         System.out.println("\n=== Games Menu ===");
         System.out.println("1. List all games");
         System.out.println("2. Top games by rating");
@@ -61,62 +60,93 @@ public class GamesController {
         System.out.print("Choose option: ");
     }
 
+    private void handleAdminAccess() {
+        if (Session.getInstance().isAdmin()) {
+            adminPanelController.showAdminPanel();
+        } else {
+            System.out.println("Access denied. Admin privileges required.");
+        }
+    }
+
     private void showAllGames() {
         List<Game> games = gamesService.getAllGames();
-        games.forEach(this::printShort);
+        if (games.isEmpty()) {
+            System.out.println("No games available.");
+            return;
+        }
+        games.forEach(this::printGameSummary);
     }
 
     private void showTopGames() {
         System.out.print("Enter limit: ");
-        int limit = Integer.parseInt(scanner.nextLine());
+        Integer limit = inputReader.readInteger();
+        if (limit == null || !Validation.isPositive(limit)) {
+            System.out.println("Invalid limit. Please enter a positive number.");
+            return;
+        }
 
-        gamesService.getTopGamesByRating(limit)
-                .forEach(this::printShort);
+        List<Game> topGames = gamesService.getTopGamesByRating(limit);
+        if (topGames.isEmpty()) {
+            System.out.println("No games found.");
+            return;
+        }
+        topGames.forEach(this::printGameSummary);
     }
 
     private void showGameDetails() {
-        System.out.print("Enter game id: ");
-        long gameId = Long.parseLong(scanner.nextLine());
+        System.out.print("Enter game ID: ");
+        Long gameId = inputReader.readLong();
+        if (gameId == null || !Validation.isValidId(gameId)) {
+            System.out.println("Invalid game ID.");
+            return;
+        }
 
-        Game game = gamesService.getGameWithReviews(gameId);
+        try {
+            Game game = gamesService.getGameWithReviews(gameId);
+            gameDetailsLoop(game);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Game not found: " + e.getMessage());
+        }
+    }
 
+    private void gameDetailsLoop(Game game) {
         boolean inDetails = true;
         while (inDetails) {
-            printGameDetails(game);
-            printGameActions();
+            printFullGameDetails(game);
+            printGameActionsMenu();
 
-            String cmd = scanner.nextLine();
-            switch (cmd) {
+            String command = inputReader.readLine();
+            switch (command) {
                 case "1" -> addToLibrary(game);
                 case "0" -> inDetails = false;
-                default -> System.out.println("Unknown command");
+                default -> System.out.println("Unknown command.");
             }
         }
     }
 
-    private void printGameDetails(Game game) {
+    private void printFullGameDetails(Game game) {
         System.out.println("\n=== Game Details ===");
+        System.out.println("ID: " + game.getId());
         System.out.println("Title: " + game.getTitle());
-        System.out.println("Rating: " + game.getRating());
+        System.out.println("Rating: " + String.format("%.1f", game.getRating()));
         System.out.println("Genres: " + game.getGenres());
         System.out.println("Summary: " + game.getSummary());
         System.out.println("Reviews: " + game.getReviews().size());
-        System.out.println("ID: " + game.getId());
     }
 
-    private void printGameActions() {
+    private void printGameActionsMenu() {
         System.out.println("\n1. Add to library");
         System.out.println("0. Back");
         System.out.print("Choose option: ");
     }
 
     private void addToLibrary(Game game) {
-        long userId = Session.getInstance().getUserId(); // используем текущего пользователя из сессии
+        long userId = Session.getInstance().getUserId();
         try {
             libraryService.processPurchase(userId, game.getId());
-            System.out.println("Game added to your library.");
+            System.out.println("Game successfully added to your library.");
         } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -125,97 +155,41 @@ public class GamesController {
 
         try {
             List<Game> games = libraryService.getAllGamesOfUser(userId);
-
-            for (Game g : games) {
-                printGameDetails(g);
+            if (games.isEmpty()) {
+                System.out.println("Your library is empty.");
+                return;
             }
+            System.out.println("\n=== Your Library ===");
+            games.forEach(this::printFullGameDetails);
         } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error loading library: " + e.getMessage());
         }
-    }
-
-    private void addGame() {
-        System.out.print("Title: ");
-        String title = scanner.nextLine();
-
-        System.out.print("Release date: ");
-        String releaseDate = scanner.nextLine();
-
-        System.out.print("Team: ");
-        String team = scanner.nextLine();
-
-        System.out.print("Rating: ");
-        float rating = Float.parseFloat(scanner.nextLine());
-
-        System.out.print("Times listed: ");
-        int timesListed = Integer.parseInt(scanner.nextLine());
-
-        System.out.print("Genres: ");
-        String genres = scanner.nextLine();
-
-        System.out.print("Summary: ");
-        String summary = scanner.nextLine();
-
-        Game game = new Game(
-                title,
-                releaseDate,
-                team,
-                rating,
-                timesListed,
-                genres,
-                summary
-        );
-
-        gamesService.addGame(game);
-        System.out.println("Game added.");
     }
 
     private void searchGame() {
         System.out.println("\n=== Search Game ===");
-        System.out.println("Enter game name: ");
-        String query = scanner.nextLine();
+        System.out.print("Enter game name: ");
+        String query = inputReader.readLine();
 
-        List<Game> games = new ArrayList<>();
-
-        games = gamesService.searchGames(query);
-        if (games.isEmpty()) {
-            System.out.println("Game not found.");
+        if (!Validation.isNotEmpty(query)) {
+            System.out.println("Search query cannot be empty.");
             return;
         }
-        for (Game g : games) {
-            printGameDetails(g);
+
+        List<Game> games = gamesService.searchGames(query);
+        if (games.isEmpty()) {
+            System.out.println("No games found matching '" + query + "'.");
+            return;
         }
 
+        System.out.println("\n=== Search Results ===");
+        games.forEach(this::printFullGameDetails);
     }
 
-    private void showAdminPanel() {
-        while (true) {
-            System.out.println("===== Admin Panel =====");
-            System.out.println("1. Add Game");
-            System.out.println("2. Change Game Info");
-            System.out.println("3. Delete Game");
-            System.out.println("0. Back");
-            String choice =  scanner.nextLine();
-
-            if (choice.equals("1")) {
-
-            } else if (choice.equals("0")) {
-
-            } else if (choice.equals("3")) {
-
-            } else if (choice.equals("0")) {
-                break;
-            } else {
-                System.out.println("Invalid choice.");
-            }
-        }
-    }
-
-    private void printShort(Game game) {
-        System.out.println(
-                game.getId() + " | " +
-                        game.getTitle() + " | rating: " +
-                        game.getRating()
-        );
+    private void printGameSummary(Game game) {
+        System.out.printf("%d | %s | Rating: %.1f%n",
+                game.getId(),
+                game.getTitle(),
+                game.getRating());
     }
 }
