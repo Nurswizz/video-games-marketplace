@@ -69,7 +69,10 @@ public class GamesController {
     }
 
     private void showAllGames() {
-        List<Game> games = gamesService.getAllGames();
+        System.out.println("Limit: ");
+        int number = new Scanner(System.in).nextInt();
+
+        List<Game> games = gamesService.getAllGames().subList(0, number);
         if (games.isEmpty()) {
             System.out.println("No games available.");
             return;
