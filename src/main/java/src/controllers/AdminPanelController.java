@@ -94,15 +94,45 @@ public class AdminPanelController {
     private void changeGameInfo() {
         System.out.println("\n=== Change Game Info ===");
         System.out.print("Enter game ID: ");
+
         Long gameId = inputReader.readLong();
         if (gameId == null || !Validation.isValidId(gameId)) {
             System.out.println("Invalid game ID.");
             return;
         }
 
-        // Implementation would depend on GamesService having an update method
-        System.out.println("Feature not yet implemented.");
+        Game game = gameService.getGameById(gameId);
+        if (game == null) {
+            System.out.println("Game not found.");
+            return;
+        }
+
+        System.out.println("\nPress ENTER to keep current value.");
+
+        String title = inputReader.readWithDefault("Title", game.getTitle());
+        String releaseDate = inputReader.readWithDefault("Release date", game.getReleaseDate());
+        String team = inputReader.readWithDefault("Team", game.getTeam());
+        float rating = inputReader.readFloatWithDefault("Rating", game.getRating());
+        int timesListed = inputReader.readIntWithDefault("Times listed", game.getTimesListed());
+        String genres = inputReader.readWithDefault("Genres", game.getGenres());
+        String summary = inputReader.readWithDefault("Summary", game.getSummary());
+
+        Game updatedGame = new Game(
+                game.getId(),
+                title,
+                releaseDate,
+                team,
+                rating,
+                timesListed,
+                genres,
+                summary
+        );
+
+        gameService.updateGame(updatedGame);
+
+        System.out.println("Game updated successfully.");
     }
+
 
     private void deleteGame() {
         System.out.println("\n=== Delete Game ===");

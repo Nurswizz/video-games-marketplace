@@ -73,7 +73,7 @@ public class GameRepository {
 
     // 4. Обновление данных игры
     public void update(Game game) {
-        String sql = "UPDATE video_games SET title=?, release_date=?, team=?, rating=?, times_listed=?, number_of_reviews=?, summary=? WHERE id=?";
+        String sql = "UPDATE video_games SET title=?, release_date=?, team=?, rating=?, times_listed=?, summary=? WHERE id=?";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stt = conn.prepareStatement(sql)) {

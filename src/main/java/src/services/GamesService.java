@@ -27,9 +27,7 @@ public class GamesService {
     }
 
     public Game getGameById(long id) {
-        return gameRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Game not found with id=" + id));
+        return gameRepository.findById(id).orElse(null);
     }
 
     public List<Game> getAllGames() {

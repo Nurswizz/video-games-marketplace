@@ -127,4 +127,25 @@ public class InputReader {
         } while (input.isEmpty());
         return input;
     }
+
+    public String readWithDefault(String label, String currentValue) {
+        System.out.print(label + " [" + currentValue + "]: ");
+        String input = readLine();
+        return input.isBlank() ? currentValue : input;
+    }
+
+    public int readIntWithDefault(String label, int currentValue) {
+        System.out.print(label + " [" + currentValue + "]: ");
+        String input = readLine();
+        return input.isBlank() ? currentValue : Integer.parseInt(input);
+    }
+
+    public float readFloatWithDefault(String label, float currentValue) {
+        System.out.print(label + " [" + currentValue + "]: ");
+        String input = readLine();
+        return input.isBlank() ? currentValue : Float.parseFloat(input);
+    }
+
+
+
 }
