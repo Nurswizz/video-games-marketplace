@@ -1,10 +1,12 @@
 package src.services;
 
+import src.interfaces.IAuthService;
+import src.interfaces.IGamesService;
 import src.repositories.AuthRepository;
 import src.entities.User;
 import src.utils.Validation;
 
-public class AuthService {
+public class AuthService implements IAuthService {
 
     private final AuthRepository auth = new AuthRepository();
 

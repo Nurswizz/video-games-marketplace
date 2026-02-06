@@ -1,11 +1,14 @@
 package src.controllers;
 
 import src.entities.Game;
+import src.interfaces.IGamesService;
+import src.interfaces.ILibraryService;
 import src.services.GamesService;
 import src.services.LibraryService;
 import src.utils.InputReader;
 import src.utils.Session;
 import src.utils.Validation;
+import src.utils.AccessManager;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,12 +16,12 @@ import java.util.Scanner;
 
 public class GamesController {
 
-    private final GamesService gamesService;
-    private final LibraryService libraryService;
+    private final IGamesService gamesService;
+    private final ILibraryService libraryService;
     private final InputReader inputReader;
     private final AdminPanelController adminPanelController;
 
-    public GamesController(GamesService gamesService, LibraryService libraryService) {
+    public GamesController(IGamesService gamesService, ILibraryService libraryService) {
         this.gamesService = gamesService;
         this.libraryService = libraryService;
         this.inputReader = new InputReader(new Scanner(System.in));
@@ -61,23 +64,26 @@ public class GamesController {
     }
 
     private void handleAdminAccess() {
-        if (Session.getInstance().isAdmin()) {
+        try {
+            AccessManager.requireAdmin();
             adminPanelController.showAdminPanel();
-        } else {
-            System.out.println("Access denied. Admin privileges required.");
+        } catch (SecurityException e) {
+            System.out.println(e.getMessage());
         }
     }
 
-    private void showAllGames() {
-        System.out.println("Limit: ");
-        int number = new Scanner(System.in).nextInt();
 
-        List<Game> games = gamesService.getAllGames().subList(0, number);
-        if (games.isEmpty()) {
-            System.out.println("No games available.");
+    private void showAllGames() {
+        Integer number = inputReader.readInteger();
+        if (number == null || number <= 0) {
+            System.out.println("Invalid limit.");
             return;
         }
-        games.forEach(this::printGameSummary);
+
+        List<Game> allGames = gamesService.getAllGames();
+        number = Math.min(number, allGames.size());
+
+        allGames.subList(0, number).forEach(this::printGameSummary);
     }
 
     private void showTopGames() {

@@ -1,5 +1,6 @@
 package src.controllers;
 
+import src.interfaces.IAuthService;
 import src.services.AuthService;
 import src.entities.User;
 
@@ -9,7 +10,7 @@ import src.utils.Session;
 
 public class AuthController {
 
-    private final AuthService authService = new AuthService();
+    private final IAuthService authService = new AuthService();
     private final Scanner scanner = new Scanner(System.in);
 
     public void authenticateUser() {

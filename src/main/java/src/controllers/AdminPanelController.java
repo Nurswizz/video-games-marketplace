@@ -1,6 +1,7 @@
 package src.controllers;
 
 import src.entities.Game;
+import src.interfaces.IGamesService;
 import src.utils.Validation;
 
 import src.utils.InputReader;
@@ -12,9 +13,9 @@ import src.services.GamesService;
 public class AdminPanelController {
 
     private final InputReader inputReader;
-    private final GamesService gameService;
+    private final IGamesService gameService;
 
-    public AdminPanelController(GamesService gameService) {
+    public AdminPanelController(IGamesService gameService) {
         this.inputReader = new InputReader(new Scanner(System.in));
         this.gameService = gameService;
     }

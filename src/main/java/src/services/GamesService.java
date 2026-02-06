@@ -8,10 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import src.interfaces.IGamesService;
 import src.repositories.GameRepository;
 import src.repositories.ReviewRepository;
 
-public class GamesService {
+public class GamesService implements IGamesService {
 
     private final GameRepository gameRepository;
     private final ReviewRepository reviewRepository;

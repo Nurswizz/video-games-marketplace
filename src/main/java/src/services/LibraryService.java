@@ -2,11 +2,13 @@ package src.services;
 
 import src.entities.Game;
 import src.entities.User;
+import src.interfaces.IAuthService;
+import src.interfaces.ILibraryService;
 import src.repositories.LibraryRepository;
 import java.util.List;
 import java.util.Objects;
 
-public class LibraryService {
+public class LibraryService implements ILibraryService {
     private final LibraryRepository libraryRepo;
 
     public LibraryService(LibraryRepository libraryRepo) {
