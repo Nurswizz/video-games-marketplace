@@ -5,7 +5,6 @@ import java.util.HashSet;
 
 public class Transformer {
 
-
     public static String fromIntToReleaseDate(int month, int day,  int year) {
         ArrayList<String> months = new  ArrayList<>() {
             {
