@@ -74,6 +74,7 @@ public class GamesController {
 
 
     private void showAllGames() {
+        System.out.print("Enter limit:");
         Integer number = inputReader.readInteger();
         if (number == null || number <= 0) {
             System.out.println("Invalid limit.");
